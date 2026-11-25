@@ -1,70 +1,50 @@
-# Getting Started with Create React App
+# Managing State Checkpoint - To-Do List
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is my checkpoint for Managing State in React. It's a to-do list where you can add, edit, delete and complete tasks. The tasks are saved in the browser, so they are still there when you come back.
 
-## Available Scripts
+## How to run it
 
-In the project directory, you can run:
+```bash
+npm install
+npm start
+```
 
-### `npm start`
+Then open http://localhost:3000 in the browser.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## What the app does
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- **Add a task**: the form at the top has a name, a description and an optional due date. The name and the description are required: if one is empty, an error message appears under the field and the task is not added.
+- **Complete a task**: click the checkbox. A completed task is crossed out and lighter, with a green check.
+- **Edit a task**: click on the text of the task (or on the pencil). The same form opens in the list, filled with the task details, with "Save" and "Cancel".
+- **Delete a task**: click the bin. The app asks "Delete this task?" with a "Delete" and a "Keep" button before removing it.
+- **Filter**: "All", "Active" or "Completed", with the number of tasks in each one. "Clear completed" removes all the completed tasks at once (after a confirmation).
+- **Due dates** (optional feature): a task with a date before today that is not done shows "Late" in red.
 
-### `npm test`
+## Files
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- `src/App.js`: the root component. It owns the tasks and the filter, and passes them to the other components.
+- `src/tasksReducer.js`: the reducer with all the actions on the tasks (`add`, `edit`, `toggle`, `delete`, `clearCompleted`) and the function that loads the tasks from localStorage
+- `src/components/TaskForm.js`: the form with the validation, used both to add and to edit a task
+- `src/components/TaskList.js`: shows the list, or a message when there is no task
+- `src/components/TaskItem.js`: one task, with its checkbox, its buttons, the edit mode and the delete confirmation
+- `src/components/TaskFilter.js`: the All / Active / Completed buttons
 
-### `npm run build`
+Each file has comments to explain what the component and its functions do.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## How the state is managed
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- **useReducer** for the tasks: all the changes go through one function, so it's easy to see everything that can happen to the list. The reducer always returns a new array and never changes the old one.
+- **localStorage** to keep the tasks:
+  - when the app starts, `useReducer` gets the tasks from localStorage (with a function, so it's only read once). If nothing is saved yet, two example tasks are shown.
+  - a `useEffect` saves the list in localStorage every time it changes
+- **useState** for the things that only matter to one component: the filter in `App`, the form values and errors in `TaskForm`, and the edit or confirm mode of each `TaskItem`
+- **Controlled inputs**: the values of the form are in the state, with one `handleChange` for all the fields (it uses the `name` of each input)
+- **Derived state**: the number of tasks in each filter and the list of visible tasks are calculated from the tasks at each render, they are not stored in another state
+- **Lifted state**: the tasks are in `App` because the form, the filter and the list all need them
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Design
 
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- the Libre Franklin font from Google Fonts
+- a paper-white background, dark text, green for completed tasks and red for delete, errors and late tasks
+- icons from Iconsax (`iconsax-reactjs`): pencil, bin and calendar
+- on a phone, the buttons of a task go under its text
